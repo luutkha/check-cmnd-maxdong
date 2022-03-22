@@ -2,9 +2,14 @@ import axios from "axios";
 import React, { useState } from "react";
 import { CSVLink } from "react-csv";
 import * as XLSX from "xlsx";
+import { useHistory } from "react-router";
 
 const Home = () => {
+  let history = useHistory();
+
+  if (!sessionStorage.getItem("check-login")) history.push("/");
   let [items, setItems] = useState([]);
+  let [rawItem, setRawItem] = useState([]);
   const [isLoading, setisLoading] = useState(false);
   const readExcel = (file) => {
     // setItems([])
@@ -37,6 +42,7 @@ const Home = () => {
         if (typeof item.cmnd !== "undefined") item.cmnd = item.cmnd.toString();
       });
       setItems(d);
+      setRawItem(d);
 
       console.log(d);
     });
@@ -46,8 +52,8 @@ const Home = () => {
     let cmnd_arr = [];
     let resp_arr = [];
 
-    for (let index = 0; index < items.length; index++) {
-      const element = items[index];
+    for (let index = 0; index < rawItem.length; index++) {
+      const element = rawItem[index];
       cmnd_arr.push(element.cmnd);
       if ((index + 1) % 20 === 0) {
         try {
@@ -77,8 +83,8 @@ const Home = () => {
     let cmnd_arr = [];
     let resp_arr = [];
 
-    for (let index = 0; index < items.length; index++) {
-      const element = items[index];
+    for (let index = 0; index < rawItem.length; index++) {
+      const element = rawItem[index];
       cmnd_arr.push(element.cmnd);
       if ((index + 1) % 20 === 0) {
         try {
@@ -109,8 +115,8 @@ const Home = () => {
     let cmnd_arr = [];
     let resp_arr = [];
 
-    for (let index = 0; index < items.length; index++) {
-      const element = items[index];
+    for (let index = 0; index < rawItem.length; index++) {
+      const element = rawItem[index];
       cmnd_arr.push(element.cmnd);
       if ((index + 1) % 20 === 0) {
         try {
@@ -144,31 +150,7 @@ const Home = () => {
       </tr>
     );
   });
-  let refresh = () => {
-    // console.log(items)
-    let check = 0;
-    let count = 0;
-    items.forEach((item) => {
-      if (item.status === 0) {
-        check = 1;
-      } else {
-        if (item.cmnd.charAt(0) === "0") item.cmnd = "x" + item.cmnd;
-        count = count + 1;
-      }
-    });
-    if (check === 1)
-      alert(
-        "Kiếm tra CMND chưa hoàn thành. Tiến độ: " +
-          count +
-          " / " +
-          items.length
-      );
-    else {
-      alert("Đã kiểm tra xong, nhấn Download file kết quả để tải về");
-    }
-    let arr = [...items];
-    setItems(arr);
-  };
+
   let headers = [
     { label: "cmnd/cccd", key: "cmnd" },
     { label: "Kết quả check", key: "status" },
